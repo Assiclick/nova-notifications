@@ -4,9 +4,9 @@ namespace Mirovit\NovaNotifications;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
-use Mirovit\NovaNotifications\Contracts\Notification as NotificationContract;
+use Mirovit\NovaNotifications\Contracts\NovaNotificationContract;
 
-class Notification implements NotificationContract, Arrayable
+class NovaNotification implements NovaNotificationContract, Arrayable
 {
     const LEVELS = ['info', 'success', 'error'];
 
@@ -14,130 +14,137 @@ class Notification implements NotificationContract, Arrayable
 
     public function __construct($title = null, $subtitle = null)
     {
-        if (!empty($title)) {
+        if (! empty($title)) {
             $this->title($title);
         }
 
-        if (!empty($subtitle)) {
+        if (! empty($subtitle)) {
             $this->subtitle($subtitle);
         }
 
-        $this
-            ->showMarkAsRead()
+        $this->showMarkAsRead()
             ->showCancel()
             ->createdAt(Carbon::now());
     }
 
-    public static function make(string $title = null, string $subtitle = null): Notification
+    public static function make(string $title = null, string $subtitle = null): NovaNotification
     {
         return new static($title, $subtitle);
     }
 
-    public function title(string $value): Notification
+    public function title(string $value): NovaNotification
     {
         $this->notification['title'] = $value;
+
         return $this;
     }
 
-    public function subtitle(string $value): Notification
+    public function subtitle(string $value): NovaNotification
     {
         $this->notification['subtitle'] = $value;
+
         return $this;
     }
 
-    public function link(string $value, bool $external = false): Notification
+    public function link(string $value, bool $external = false): NovaNotification
     {
         $this->notification['url'] = $value;
         $this->notification['external'] = $external;
+
         return $this;
     }
 
-    public function route(string $name, string $resourceName, $resourceId = null): Notification
+    public function route(string $name, string $resourceName, $resourceId = null): NovaNotification
     {
         $this->notification['route'] = [
             'name' => $name,
-            'params' => ['resourceName' => $resourceName]
+            'params' => ['resourceName' => $resourceName],
         ];
 
-        if (!empty($resourceId)) {
+        if (! empty($resourceId)) {
             $this->notification['route']['params']['resourceId'] = $resourceId;
         }
 
         return $this;
     }
 
-    public function routeIndex(string $resourceName): Notification
+    public function routeIndex(string $resourceName): NovaNotification
     {
         return $this->route('index', $resourceName);
     }
 
-    public function routeCreate(string $resourceName): Notification
+    public function routeCreate(string $resourceName): NovaNotification
     {
         return $this->route('create', $resourceName);
     }
 
-    public function routeEdit(string $resourceName, $resourceId): Notification
+    public function routeEdit(string $resourceName, $resourceId): NovaNotification
     {
         return $this->route('edit', $resourceName, $resourceId);
     }
 
-    public function routeDetail(string $resourceName, $resourceId): Notification
+    public function routeDetail(string $resourceName, $resourceId): NovaNotification
     {
         return $this->route('detail', $resourceName, $resourceId);
     }
 
-    public function level(string $value): Notification
+    public function level(string $value): NovaNotification
     {
-        if (!in_array($value, Notification::LEVELS)) {
+        if (! in_array($value, NovaNotification::LEVELS)) {
             $value = 'info';
         }
 
         $this->notification['level'] = $value;
+
         return $this;
     }
 
-    public function info(string $value): Notification
+    public function info(string $value): NovaNotification
     {
         return $this
             ->title($value)
             ->level('info');
     }
 
-    public function success(string $value): Notification
+    public function success(string $value): NovaNotification
     {
         return $this
             ->title($value)
             ->level('success');
     }
 
-    public function error(string $value): Notification
+    public function error(string $value): NovaNotification
     {
         return $this
             ->title($value)
             ->level('error');
     }
 
-    public function createdAt(Carbon $value): Notification
+    public function createdAt(Carbon $value): NovaNotification
     {
         $this->notification['created_at'] = $value->toAtomString();
+
         return $this;
     }
 
-    public function icon(string $value): Notification
+    public function icon(string $value): NovaNotification
     {
         $this->notification['icon'] = $value;
+
         return $this;
     }
 
-    public function showMarkAsRead(bool $value = true): Notification
+    public function showMarkAsRead(bool $value = true): NovaNotification
     {
         $this->notification['show_mark_as_read'] = $value;
+
         return $this;
     }
 
-    public function showCancel(bool $value = true): Notification
+    public function showCancel(bool $value = true): NovaNotification
     {
         $this->notification['show_cancel'] = $value;
+
         return $this;
     }
 
